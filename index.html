@@ -1,0 +1,2038 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ IRYS Avatar Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;500;700;900&family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        :root {
+            --primary: #00f7ff;
+            --primary-dark: #00ccd4;
+            --secondary: #ff00ff;
+            --accent: #ff4d9e;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --light: #e0e0ff;
+        }
+        
+        body {
+            background: radial-gradient(circle at center, var(--darker) 0%, var(--dark) 100%);
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(0, 247, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 20%);
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes gradientText {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes gradientBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0.5; }
+            25% { transform: translateY(-20px) translateX(10px) rotate(5deg); opacity: 0.8; }
+            50% { transform: translateY(-40px) translateX(-10px) rotate(-5deg); opacity: 0.6; }
+            75% { transform: translateY(-20px) translateX(5px) rotate(3deg); opacity: 0.9; }
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateY(-50%) translateX(20px); }
+            to { opacity: 1; transform: translateY(-50%) translateX(0); }
+        }
+        
+        /* Sparait Mascot - Help Button */
+        .mascot-container {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            z-index: 100;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .mascot {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(0, 247, 255, 0.7));
+            animation: float 4s ease-in-out infinite;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+        
+        .mascot-container:hover .mascot {
+            filter: drop-shadow(0 0 25px rgba(0, 247, 255, 1));
+            transform: scale(1.1);
+            animation-play-state: paused;
+        }
+        
+        .mascot-glow {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(0, 247, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            animation: pulse 5s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(1deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.7; }
+        }
+        
+        /* 3D IRYS Cube */
+        .cube-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(-15deg) rotateY(45deg);
+            width: 300px;  /* Increased from 200px */
+            height: 300px; /* Increased from 200px */
+            perspective: 1000px;
+            z-index: 0;
+            opacity: 0.3;  /* Increased from 0.15 */
+            animation: floatCube 20s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(0, 247, 255, 0.5));
+        }
+        
+        @keyframes floatCube {
+            0%, 100% { 
+                transform: translate(-50%, -50%) rotateX(-15deg) rotateY(45deg) translateY(0) scale(1); 
+                opacity: 0.3;
+            }
+            50% { 
+                transform: translate(-50%, -50%) rotateX(-15deg) rotateY(45deg) translateY(-50px) scale(1.05);
+                opacity: 0.4;
+            }
+        }
+        
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 30s linear infinite;
+        }
+        
+        @keyframes rotateCube {
+            0% { 
+                transform: rotateY(0deg) rotateX(15deg); 
+            }
+            100% { 
+                transform: rotateY(360deg) rotateX(375deg); /* Slight tilt for better visibility */
+            }
+        }
+        
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 150px; /* Increased from 100px */
+            font-weight: 900;
+            color: var(--primary);
+            text-shadow: 0 0 30px rgba(0, 247, 255, 1); /* Enhanced glow */
+            background: rgba(0, 247, 255, 0.1); /* More visible background */
+            border: 3px solid rgba(0, 247, 255, 0.4); /* Thicker border */
+            box-sizing: border-box;
+            transition: all 0.5s ease;
+            backdrop-filter: blur(2px);
+            box-shadow: inset 0 0 30px rgba(0, 247, 255, 0.2); /* Inner glow */
+        }
+        
+        .front  { transform: rotateY(0deg) translateZ(100px); }
+        .back   { transform: rotateY(180deg) translateZ(100px); }
+        .right  { transform: rotateY(90deg) translateZ(100px); }
+        .left   { transform: rotateY(-90deg) translateZ(100px); }
+        .top    { transform: rotateX(90deg) translateZ(100px); }
+        .bottom { transform: rotateX(-90deg) translateZ(100px); }
+        
+        .cube:hover .face {
+            color: var(--primary);
+            text-shadow: 0 0 50px rgba(0, 247, 255, 1.5);
+            border-color: var(--primary);
+            box-shadow: 0 0 60px rgba(0, 247, 255, 0.6), 
+                       inset 0 0 40px rgba(0, 247, 255, 0.3);
+            background: rgba(0, 247, 255, 0.15);
+            transform: translateZ(10px); /* Slight lift effect */
+        }
+        
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 230, 204, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+            50% { transform: translateY(-100px) rotate(180deg); opacity: 0.5; }
+        }
+        
+        .container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .avatar-canvas {
+            background: rgba(20, 20, 40, 0.4);
+            border: 2px solid rgba(0, 247, 255, 0.3);
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            width: 500px;
+            height: 500px;
+            box-shadow: 
+                0 0 30px rgba(0, 247, 255, 0.15),
+                inset 0 0 30px rgba(0, 247, 255, 0.1);
+            backdrop-filter: blur(15px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0 auto;
+        }
+        
+        .avatar-canvas::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            background-size: 400% 400%;
+            z-index: -1;
+            border-radius: 26px;
+            opacity: 0.7;
+            animation: gradientBorder 8s ease infinite;
+        }
+        
+        .avatar-canvas:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 25px 50px rgba(0, 247, 255, 0.25),
+                inset 0 0 40px rgba(0, 247, 255, 0.2);
+        }
+        
+        .draggable {
+            cursor: move;
+            user-select: none;
+            position: absolute;
+            z-index: 10;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+        
+        .draggable:hover {
+            border-color: #00e6cc;
+        }
+        
+        .draggable.selected {
+            border-color: #00e6cc;
+            box-shadow: 0 0 10px rgba(0, 230, 204, 0.5);
+        }
+        
+        .icon-btn {
+            background: rgba(40, 40, 70, 0.4);
+            border: 2px solid rgba(0, 247, 255, 0.2);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 24px;
+            color: var(--light);
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .icon-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 247, 255, 0.2), rgba(255, 0, 255, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .icon-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            background: rgba(0, 247, 255, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 247, 255, 0.2);
+            color: var(--primary);
+        }
+        
+        .icon-btn:hover::before {
+            opacity: 1;
+        }
+        
+        .icon-btn:active {
+            transform: translateY(0) scale(0.95);
+        }
+        
+        .icon-btn:hover {
+            background: #00e6cc;
+            color: #1a1a1a;
+        }
+        
+        .control-panel {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(15, 15, 35, 0.7);
+            border: 1px solid rgba(0, 247, 255, 0.2);
+            border-radius: 24px;
+            padding: 1.8rem;
+            width: 320px;
+            display: none;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(0, 247, 255, 0.1);
+            z-index: 100;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(-50%) translateX(20px);
+        }
+        
+        .control-panel.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+            animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        
+        .control-panel::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            background-size: 400% 400%;
+            z-index: -1;
+            border-radius: 26px;
+            opacity: 0.3;
+            animation: gradientBorder 8s ease infinite;
+        }
+        
+        .control-panel.active {
+            display: block;
+        }
+        
+        .btn {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            color: #0a0a1a;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0, 247, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            background-size: 200% 200%;
+            z-index: -1;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 247, 255, 0.4);
+            color: #050510;
+        }
+        
+        .btn:hover::before {
+            opacity: 1;
+            animation: gradientBG 4s ease infinite;
+        }
+        
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+            box-shadow: 0 5px 10px rgba(0, 247, 255, 0.3);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(255, 107, 71, 0.4);
+        }
+        
+        .btn-download {
+            background: linear-gradient(135deg, var(--accent), #ff1a75);
+            color: white;
+            box-shadow: 0 8px 20px rgba(255, 77, 158, 0.3);
+        }
+        
+        .btn-download:hover {
+            box-shadow: 0 10px 25px rgba(255, 77, 158, 0.4);
+            color: white;
+        }
+        
+        .btn-download:hover {
+            box-shadow: 0 15px 30px rgba(0, 230, 204, 0.4);
+        }
+        
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin: 1.5rem 0 3rem;
+            letter-spacing: 4px;
+            animation: gradientText 8s ease infinite;
+            text-shadow: 0 0 20px rgba(0, 247, 255, 0.3);
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+            padding: 0 2rem;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .instruction {
+            font-family: 'Poppins', sans-serif;
+            color: rgba(0, 230, 204, 0.8);
+            text-align: center;
+            margin: 25px 0;
+            font-size: 16px;
+            font-weight: 400;
+            background: rgba(0, 230, 204, 0.05);
+            padding: 18px 30px;
+            border-radius: 25px;
+            border: 1px solid rgba(0, 230, 204, 0.2);
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            letter-spacing: 0.3px;
+            line-height: 1.5;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 15px 0;
+            accent-color: #00e6cc;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00e6cc, #64ffda);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 230, 204, 0.4);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00e6cc, #64ffda);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 230, 204, 0.4);
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .category-tab {
+            font-family: 'Inter', sans-serif;
+            background: rgba(51, 51, 68, 0.8);
+            border: 2px solid rgba(85, 85, 102, 0.5);
+            color: #aaa;
+            padding: 14px 22px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
+        }
+        
+        .category-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #00e6cc, #64ffda);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .category-tab.active {
+            color: #1a1a1a;
+            border-color: #00e6cc;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 230, 204, 0.3);
+        }
+        
+        .category-tab.active::before {
+            opacity: 1;
+        }
+        
+        .category-tab:hover {
+            border-color: #00e6cc;
+            color: #00e6cc;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 230, 204, 0.2);
+        }
+        
+        .content-panel {
+            display: none;
+        }
+        
+        .content-panel.active {
+            display: block;
+        }
+        
+        .emoji-container {
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 15px;
+            background: rgba(30, 30, 46, 0.3);
+            border: 1px solid rgba(0, 230, 204, 0.2);
+            backdrop-filter: blur(10px);
+            margin: 0 auto;
+            max-width: 800px;
+        }
+        
+        .emoji-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .emoji-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .emoji-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00e6cc, #64ffda);
+            border-radius: 10px;
+        }
+        
+        .emoji-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #00d4b8, #50e3c2);
+        }
+        
+        .personal-container {
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 15px;
+            border-radius: 15px;
+            background: rgba(30, 30, 46, 0.3);
+            border: 1px solid rgba(0, 230, 204, 0.2);
+            backdrop-filter: blur(10px);
+            margin: 0 auto;
+            max-width: 600px;
+        }
+        
+        .personal-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .personal-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .personal-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00e6cc, #64ffda);
+            border-radius: 10px;
+        }
+        
+        .personal-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #00d4b8, #50e3c2);
+        }
+        
+        /* Smooth scrolling */
+        .emoji-container, .personal-container {
+            scroll-behavior: smooth;
+        }
+        
+        .emoji-item {
+            background: rgba(51, 51, 68, 0.6);
+            border: 2px solid rgba(85, 85, 102, 0.3);
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 28px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .emoji-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 230, 204, 0.1), rgba(100, 255, 218, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .emoji-item:hover {
+            border-color: #00e6cc;
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 10px 25px rgba(0, 230, 204, 0.3);
+        }
+        
+        .emoji-item:hover::before {
+            opacity: 1;
+        }
+        
+        .personal-item {
+            background: rgba(51, 51, 68, 0.6);
+            border: 2px solid rgba(85, 85, 102, 0.3);
+            width: 90px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 18px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .personal-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 230, 204, 0.1), rgba(100, 255, 218, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .personal-item:hover {
+            border-color: #00e6cc;
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 230, 204, 0.3);
+        }
+        
+        .personal-item:hover::before {
+            opacity: 1;
+        }
+        
+        .personal-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .personal-item .delete-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .personal-item:hover .delete-btn {
+            display: block;
+        }
+        
+        .rotate-handle {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 20px;
+            height: 20px;
+            background: #00e6cc;
+            border-radius: 50%;
+            cursor: grab;
+            display: none;
+        }
+        
+        .draggable.selected .rotate-handle {
+            display: block;
+        }
+        
+        .resize-handle {
+            position: absolute;
+            bottom: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            background: #ff6b47;
+            border-radius: 50%;
+            cursor: nw-resize;
+            display: none;
+        }
+        
+        .draggable.selected .resize-handle {
+            display: block;
+        }
+        
+        /* Social buttons */
+        .social-buttons {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
+        }
+        
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .social-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .social-btn:hover::before {
+            opacity: 1;
+        }
+        
+        .social-btn:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .social-btn.twitter {
+            background: rgba(29, 161, 242, 0.1);
+            border-color: rgba(29, 161, 242, 0.3);
+            color: #1DA1F2;
+        }
+        
+        .social-btn.twitter::before {
+            background: linear-gradient(135deg, #1DA1F2, #0d8bd9);
+        }
+        
+        .social-btn.twitter:hover {
+            color: white;
+        }
+        
+        .social-btn.website {
+            background: rgba(0, 230, 204, 0.1);
+            border-color: rgba(0, 230, 204, 0.3);
+            color: #00e6cc;
+        }
+        
+        .social-btn.website::before {
+            background: linear-gradient(135deg, #00e6cc, #64ffda);
+        }
+        
+        .social-btn.website:hover {
+            color: #1a1a1a;
+        }
+        
+        .social-btn.discord {
+            background: rgba(114, 137, 218, 0.1);
+            border-color: rgba(114, 137, 218, 0.3);
+            color: #7289DA;
+        }
+        
+        .social-btn.discord::before {
+            background: linear-gradient(135deg, #7289DA, #5865F2);
+        }
+        
+        .social-btn.discord:hover {
+            color: white;
+        }
+        
+        .social-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+        
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background: rgba(26, 26, 46, 0.95);
+            color: #00e6cc;
+            text-align: center;
+            border-radius: 12px;
+            padding: 10px 15px;
+            position: absolute;
+            z-index: 9999;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 230, 204, 0.3);
+            backdrop-filter: blur(10px);
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(26, 26, 46, 0.95) transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(-5px);
+        }
+        
+        /* Special tooltip for canvas */
+        .canvas-tooltip {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 230, 204, 0.1);
+            border: 1px solid rgba(0, 230, 204, 0.3);
+            border-radius: 10px;
+            padding: 8px 12px;
+            color: rgba(0, 230, 204, 0.8);
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+            animation: fadeInOut 4s ease-in-out infinite;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        /* Help button */
+        .help-button {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00e6cc, #64ffda);
+            border: none;
+            border-radius: 50%;
+            color: #1a1a1a;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 230, 204, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .help-button:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 230, 204, 0.4);
+        }
+        
+        /* Help modal */
+        .help-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .help-content {
+            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+            border: 2px solid #00e6cc;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: #ffffff;
+            position: relative;
+        }
+        
+        .help-content h2 {
+            color: #00e6cc;
+            font-family: 'Orbitron', monospace;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .help-section {
+            margin-bottom: 20px;
+        }
+        
+        .help-section h3 {
+            color: #64ffda;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .help-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .help-section li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .help-section li::before {
+            content: "→";
+            color: #00e6cc;
+            position: absolute;
+            left: 0;
+        }
+        
+        .close-help {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #00e6cc;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .close-help:hover {
+            background: rgba(0, 230, 204, 0.1);
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sparait Mascot -->
+    <div class="mascot-container">
+        <img src="sparait.png" alt="Sparait Mascot" class="mascot">
+        <div class="mascot-glow"></div>
+    </div>
+    
+    <!-- 3D IRYS Cube Background -->
+    <div class="cube-container">
+        <div class="cube">
+            <div class="face front">I</div>
+            <div class="face back">R</div>
+            <div class="face right">Y</div>
+            <div class="face left">S</div>
+            <div class="face top"></div>
+            <div class="face bottom"></div>
+        </div>
+    </div>
+    
+    <!-- Animated background particles -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Social Media Buttons -->
+    <div class="social-buttons">
+        <a href="https://x.com/irys_xyz" target="_blank" rel="noopener noreferrer" class="social-btn twitter" title="Follow us on X (Twitter)">
+            <svg viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+        </a>
+        
+        <a href="https://irys.xyz/" target="_blank" rel="noopener noreferrer" class="social-btn website" title="Visit Irys Website">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+            </svg>
+        </a>
+        
+        <a href="https://discord.gg/irys" target="_blank" rel="noopener noreferrer" class="social-btn discord" title="Join our Discord">
+            <svg viewBox="0 0 24 24">
+                <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0189 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1568 2.4189Z"/>
+            </svg>
+        </a>
+    </div>
+    
+    <div class="container mx-auto p-6">
+        <!-- Header -->
+        <div class="title">IRYS AVATAR EDITOR</div>
+        
+        <!-- Control Buttons -->
+        <div class="flex justify-center gap-4 mb-8">
+            <div class="tooltip">
+                <button class="btn" onclick="uploadImage()">Upload Avatar</button>
+                <span class="tooltiptext">Upload a base image for your avatar (JPG, PNG)</span>
+            </div>
+            <div class="tooltip">
+                <button class="btn-download btn" onclick="downloadAvatar()">Download</button>
+                <span class="tooltiptext">Download your completed avatar as PNG image</span>
+            </div>
+        </div>
+        
+        <!-- Category Tabs -->
+        <div class="flex justify-center gap-2 mb-6">
+            <div class="tooltip">
+                <button class="category-tab active" onclick="showCategory('emojis')" data-category="emojis">
+                    😀 Emojis
+                </button>
+                <span class="tooltiptext">Browse and add emoji faces, hearts, and symbols</span>
+            </div>
+            <div class="tooltip">
+                <button class="category-tab" onclick="showCategory('accessories')" data-category="accessories">
+                    👑 Accessories
+                </button>
+                <span class="tooltiptext">Add hats, glasses, jewelry and other accessories</span>
+            </div>
+            <div class="tooltip">
+                <button class="category-tab" onclick="showCategory('personal')" data-category="personal">
+                    🎨 Custom
+                </button>
+                <span class="tooltiptext">Upload and use your own custom images</span>
+            </div>
+        </div>
+        
+        <!-- Content Panels -->
+        <div id="emojiPanel" class="content-panel active">
+            <div class="emoji-container">
+                <div class="grid grid-cols-8 gap-2 max-w-2xl mx-auto mb-4">
+                    <!-- Emojis will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div id="accessoryPanel" class="content-panel">
+            <div class="emoji-container">
+                <div class="grid grid-cols-6 gap-2 max-w-xl mx-auto mb-4">
+                    <!-- Accessories will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div id="personalPanel" class="content-panel">
+            <div class="text-center mb-4">
+                <div class="tooltip">
+                    <button class="btn" onclick="uploadPersonalItem()">📁 Upload Custom Item</button>
+                    <span class="tooltiptext">Upload your own images (stickers, logos, art)</span>
+                </div>
+            </div>
+            <div class="personal-container">
+                <div id="personalGrid" class="grid grid-cols-4 gap-3 max-w-lg mx-auto">
+                    <!-- Personal items will appear here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="instruction">
+            Click on any element to add it to your avatar. Click on canvas elements to edit them.
+        </div>
+        
+        <!-- Avatar Canvas -->
+        <div class="flex justify-center">
+            <div id="avatarCanvas" class="avatar-canvas">
+                <div class="canvas-tooltip">
+                    💡 Click elements to select • Drag to move • Use handles to resize/rotate
+                </div>
+                <!-- Elements will be added here -->
+            </div>
+        </div>
+        
+        <!-- Hidden file inputs -->
+        <input type="file" id="fileInput" accept="image/*" onchange="handleFileUpload(event)">
+        <input type="file" id="personalFileInput" accept="image/*" onchange="handlePersonalUpload(event)">
+    </div>
+    
+    <!-- Help Button -->
+    <button class="help-button" onclick="toggleHelp()" title="Show Help">
+        ?
+    </button>
+    
+    <!-- Help Modal -->
+    <div id="helpModal" class="help-modal" onclick="closeHelp(event)">
+        <div class="help-content">
+            <button class="close-help" onclick="closeHelp()">&times;</button>
+            <h2>How to Use Avatar Editor</h2>
+            
+            <div class="help-section">
+                <h3>🎨 Getting Started</h3>
+                <ul>
+                    <li>Upload a base avatar image or start with a blank canvas</li>
+                    <li>Browse emojis, accessories, or upload custom items</li>
+                    <li>Click any element to add it to your canvas</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>✏️ Editing Elements</h3>
+                <ul>
+                    <li>Click on canvas elements to select them</li>
+                    <li>Drag elements to move them around</li>
+                    <li>Use orange handle to resize elements</li>
+                    <li>Use cyan handle to rotate elements</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>⚙️ Control Panel</h3>
+                <ul>
+                    <li>Select an element to open the control panel</li>
+                    <li>Adjust size, rotation, opacity, and layer order</li>
+                    <li>Use the delete button to remove elements</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>💾 Saving Your Work</h3>
+                <ul>
+                    <li>Click "Download" to save your avatar as PNG</li>
+                    <li>Your custom uploaded items are saved for reuse</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>🔗 Social Links</h3>
+                <ul>
+                    <li>Follow us on X (Twitter) for updates</li>
+                    <li>Visit our website for more tools</li>
+                    <li>Join our Discord community</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Control Panel -->
+    <div id="controlPanel" class="control-panel">
+        <h3 style="color: #00e6cc; margin-bottom: 20px; font-family: 'Orbitron', monospace; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Element Controls</h3>
+        
+        <div style="margin-bottom: 20px;">
+            <div class="tooltip">
+                <label style="color: #00e6cc; display: block; margin-bottom: 8px; font-family: 'Inter', sans-serif; font-weight: 500; letter-spacing: 0.5px;">Size:</label>
+                <span class="tooltiptext">Adjust the width and height of the selected element</span>
+            </div>
+            <input type="range" id="sizeSlider" min="1" max="500" value="60" oninput="updateSelectedSize(this.value)">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <div class="tooltip">
+                <label style="color: #00e6cc; display: block; margin-bottom: 8px; font-family: 'Inter', sans-serif; font-weight: 500; letter-spacing: 0.5px;">Rotation:</label>
+                <span class="tooltiptext">Rotate the element from 0 to 360 degrees</span>
+            </div>
+            <input type="range" id="rotationSlider" min="0" max="360" value="0" oninput="updateSelectedRotation(this.value)">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <div class="tooltip">
+                <label style="color: #00e6cc; display: block; margin-bottom: 8px; font-family: 'Inter', sans-serif; font-weight: 500; letter-spacing: 0.5px;">Opacity:</label>
+                <span class="tooltiptext">Control transparency (0% = invisible, 100% = solid)</span>
+            </div>
+            <input type="range" id="opacitySlider" min="0" max="100" value="100" oninput="updateSelectedOpacity(this.value)">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <div class="tooltip">
+                <label style="color: #00e6cc; display: block; margin-bottom: 8px; font-family: 'Inter', sans-serif; font-weight: 500; letter-spacing: 0.5px;">Layer:</label>
+                <span class="tooltiptext">Control stacking order (higher = on top)</span>
+            </div>
+            <input type="range" id="zIndexSlider" min="1" max="100" value="10" oninput="updateSelectedZIndex(this.value)">
+        </div>
+        
+        <div class="tooltip">
+            <button class="btn" onclick="deleteSelected()" style="width: 100%; background: #f44336;">Delete Element</button>
+            <span class="tooltiptext">Remove the selected element from canvas</span>
+        </div>
+    </div>
+
+    <script>
+        let elementCounter = 0;
+        let selectedElement = null;
+        let isDragging = false;
+        let isRotating = false;
+        let isResizing = false;
+        let personalItems = [];
+        
+        // Extended emoji collection
+        const emojiCollection = [
+            // Faces
+            '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰',
+            '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏',
+            '😒', '😞', '😔', '😟', '😕', '🙁', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡',
+            '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶',
+            '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴',
+            
+            // Hearts & emotions
+            '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖',
+            '💘', '💝', '💟', '💌', '💋', '💯', '💢', '💥', '💫', '💦', '💨', '🕳️', '💬', '👁️‍🗨️', '🗨️', '🗯️',
+            
+            // Hands & gestures
+            '👍', '👎', '👌', '🤌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️',
+            '👋', '🤚', '🖐️', '✋', '🖖', '👏', '🙌', '🤲', '🤝', '🙏', '✍️', '💅', '🤳', '💪', '🦾', '🦿',
+            
+            // Animals
+            '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐽', '🐸', '🐵',
+            '🙈', '🙉', '🙊', '🐒', '🐔', '🐧', '🐦', '🐤', '🐣', '🐥', '🦆', '🦅', '🦉', '🦇', '🐺', '🐗',
+            '🐴', '🦄', '🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦟', '🦗', '🕷️', '🦂', '🐢', '🐍', '🦎', '🦖',
+            
+            // Food
+            '🍎', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅',
+            '🍆', '🥑', '🥦', '🥬', '🥒', '🌶️', '🫑', '🌽', '🥕', '🫒', '🧄', '🧅', '🥔', '🍠', '🥐', '🥖',
+            '🍞', '🥨', '🥯', '🧀', '🥚', '🍳', '🧈', '🥞', '🧇', '🥓', '🥩', '🍗', '🍖', '🦴', '🌭', '🍔',
+            
+            // Objects & symbols
+            '⭐', '🌟', '✨', '💫', '☀️', '🌙', '⚡', '🔥', '💥', '❄️', '⛄', '🌈', '🎉', '🎊', '🎈', '🎁',
+            '🏆', '🥇', '🥈', '🥉', '🏅', '🎗️', '🎫', '🎪', '🎭', '🎨', '🎬', '🎤', '🎧', '🎼', '🎵', '🎶',
+            '🚀', '🛸', '🌍', '🌎', '🌏', '🗺️', '⛰️', '🏔️', '🌋', '🏕️', '🏖️', '🏜️', '🏝️', '🏞️', '🏟️', '🏛️'
+        ];
+        
+        const accessoryCollection = [
+            '👑', '🎩', '🧢', '👒', '🎓', '⛑️', '👓', '🕶️', '🥽', '👂', '👃', '👄', '🦷', '👅', '💄',
+            '💋', '👔', '👕', '👖', '🧣', '🧤', '🧥', '🧦', '👗', '👘', '🥻', '🩱', '🩲', '🩳', '👙',
+            '👠', '👡', '👢', '👞', '👟', '🥾', '🥿', '🩴', '🎀', '🎗️', '💎', '💍', '👑', '⌚', '📿',
+            '🔗', '💼', '🎒', '👛', '👜', '👝', '🛍️', '🎁', '🎊', '🎉', '🏆', '🥇', '🏅', '🎖️'
+        ];
+        
+        function initializeCategories() {
+            populateEmojis();
+            populateAccessories();
+        }
+        
+        function populateEmojis() {
+            const panel = document.getElementById('emojiPanel').querySelector('.grid');
+            panel.innerHTML = '';
+            
+            emojiCollection.forEach(emoji => {
+                const item = document.createElement('div');
+                item.className = 'emoji-item';
+                item.textContent = emoji;
+                item.onclick = () => addIcon(emoji);
+                panel.appendChild(item);
+            });
+        }
+        
+        function populateAccessories() {
+            const panel = document.getElementById('accessoryPanel').querySelector('.grid');
+            panel.innerHTML = '';
+            
+            accessoryCollection.forEach(accessory => {
+                const item = document.createElement('div');
+                item.className = 'emoji-item';
+                item.textContent = accessory;
+                item.onclick = () => addIcon(accessory);
+                panel.appendChild(item);
+            });
+        }
+        
+        function showCategory(category) {
+            // Update tabs
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            // Update panels
+            document.querySelectorAll('.content-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            if (category === 'emojis') {
+                document.getElementById('emojiPanel').classList.add('active');
+            } else if (category === 'accessories') {
+                document.getElementById('accessoryPanel').classList.add('active');
+            } else if (category === 'personal') {
+                document.getElementById('personalPanel').classList.add('active');
+            }
+        }
+        
+        function uploadPersonalItem() {
+            document.getElementById('personalFileInput').click();
+        }
+        
+        function handlePersonalUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageSrc = e.target.result;
+                const personalItem = {
+                    id: 'personal-' + Date.now(),
+                    src: imageSrc,
+                    name: file.name
+                };
+                personalItems.push(personalItem);
+                addPersonalItemToGrid(personalItem);
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function addPersonalItemToGrid(item) {
+            const grid = document.getElementById('personalGrid');
+            const itemElement = document.createElement('div');
+            itemElement.className = 'personal-item';
+            itemElement.innerHTML = `
+                <img src="${item.src}" alt="${item.name}">
+                <button class="delete-btn" onclick="deletePersonalItem('${item.id}')">&times;</button>
+            `;
+            itemElement.onclick = (e) => {
+                if (!e.target.classList.contains('delete-btn')) {
+                    addPersonalToCanvas(item.src);
+                }
+            };
+            grid.appendChild(itemElement);
+        }
+        
+        function addPersonalToCanvas(imageSrc) {
+            const canvas = document.getElementById('avatarCanvas');
+            const element = document.createElement('div');
+            element.className = 'draggable';
+            element.style.position = 'absolute';
+            element.style.left = '50px';
+            element.style.top = '50px';
+            element.style.width = '80px';
+            element.style.height = '80px';
+            element.style.backgroundImage = `url(${imageSrc})`;
+            element.style.backgroundSize = 'contain';
+            element.style.backgroundRepeat = 'no-repeat';
+            element.style.backgroundPosition = 'center';
+            element.style.opacity = '1';
+            element.style.zIndex = '10';
+            element.style.transform = 'rotate(0deg)';
+            element.id = 'element-' + (++elementCounter);
+            
+            // Add control handles
+            const rotateHandle = document.createElement('div');
+            rotateHandle.className = 'rotate-handle';
+            element.appendChild(rotateHandle);
+            
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle';
+            element.appendChild(resizeHandle);
+            
+            setupElementInteractions(element);
+            canvas.appendChild(element);
+        }
+        
+        function deletePersonalItem(itemId) {
+            personalItems = personalItems.filter(item => item.id !== itemId);
+            const grid = document.getElementById('personalGrid');
+            const itemElement = grid.querySelector(`[onclick*="${itemId}"]`);
+            if (itemElement) {
+                itemElement.remove();
+            }
+        }
+        
+        function uploadImage() {
+            document.getElementById('fileInput').click();
+        }
+        
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                addImageToCanvas(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function addImageToCanvas(imageSrc) {
+            const canvas = document.getElementById('avatarCanvas');
+            const element = document.createElement('div');
+            element.className = 'draggable';
+            element.style.position = 'absolute';
+            element.style.left = '50px';
+            element.style.top = '50px';
+            element.style.width = '100px';
+            element.style.height = '100px';
+            element.style.backgroundImage = `url(${imageSrc})`;
+            element.style.backgroundSize = 'contain';
+            element.style.backgroundRepeat = 'no-repeat';
+            element.style.backgroundPosition = 'center';
+            element.style.opacity = '1';
+            element.style.zIndex = '10';
+            element.style.transform = 'rotate(0deg)';
+            element.id = 'element-' + (++elementCounter);
+            
+            // Add control handles
+            const rotateHandle = document.createElement('div');
+            rotateHandle.className = 'rotate-handle';
+            element.appendChild(rotateHandle);
+            
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle';
+            element.appendChild(resizeHandle);
+            
+            setupElementInteractions(element);
+            canvas.appendChild(element);
+        }
+        
+        function addIcon(icon) {
+            const canvas = document.getElementById('avatarCanvas');
+            const element = document.createElement('div');
+            element.className = 'draggable';
+            element.style.position = 'absolute';
+            element.style.left = '100px';
+            element.style.top = '100px';
+            element.style.fontSize = '60px';
+            element.style.width = '60px';
+            element.style.height = '60px';
+            element.style.display = 'flex';
+            element.style.alignItems = 'center';
+            element.style.justifyContent = 'center';
+            element.style.opacity = '1';
+            element.style.zIndex = '10';
+            element.style.transform = 'rotate(0deg)';
+            element.textContent = icon;
+            element.id = 'element-' + (++elementCounter);
+            
+            // Add control handles
+            const rotateHandle = document.createElement('div');
+            rotateHandle.className = 'rotate-handle';
+            element.appendChild(rotateHandle);
+            
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle';
+            element.appendChild(resizeHandle);
+            
+            setupElementInteractions(element);
+            canvas.appendChild(element);
+        }
+        
+        function setupElementInteractions(element) {
+            // Click to select
+            element.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectElement(element);
+            });
+            
+            // Drag functionality
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            element.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('rotate-handle') || e.target.classList.contains('resize-handle')) {
+                    return;
+                }
+                
+                isDragging = true;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                
+                function elementDrag(e) {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    element.style.top = (element.offsetTop - pos2) + "px";
+                    element.style.left = (element.offsetLeft - pos1) + "px";
+                }
+                
+                function closeDragElement() {
+                    isDragging = false;
+                    document.removeEventListener('mousemove', elementDrag);
+                    document.removeEventListener('mouseup', closeDragElement);
+                }
+                
+                document.addEventListener('mousemove', elementDrag);
+                document.addEventListener('mouseup', closeDragElement);
+            });
+            
+            // Rotation handle
+            const rotateHandle = element.querySelector('.rotate-handle');
+            if (rotateHandle) {
+                rotateHandle.addEventListener('mousedown', function(e) {
+                    e.stopPropagation();
+                    isRotating = true;
+                    const rect = element.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    
+                    function rotateElement(e) {
+                        if (!isRotating) return;
+                        const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * 180 / Math.PI;
+                        const normalizedAngle = ((angle + 360) % 360);
+                        
+                        // Update transform while preserving other transforms
+                        const currentTransform = element.style.transform || '';
+                        const withoutRotate = currentTransform.replace(/rotate\([^)]*\)/g, '').trim();
+                        const newTransform = withoutRotate ? 
+                            `${withoutRotate} rotate(${normalizedAngle}deg)` : 
+                            `rotate(${normalizedAngle}deg)`;
+                        
+                        element.style.transform = newTransform;
+                        
+                        // Update slider if element is selected
+                        if (element === selectedElement) {
+                            document.getElementById('rotationSlider').value = normalizedAngle;
+                        }
+                    }
+                    
+                    function stopRotating() {
+                        isRotating = false;
+                        document.removeEventListener('mousemove', rotateElement);
+                        document.removeEventListener('mouseup', stopRotating);
+                    }
+                    
+                    document.addEventListener('mousemove', rotateElement);
+                    document.addEventListener('mouseup', stopRotating);
+                });
+            }
+            
+            // Resize handle
+            const resizeHandle = element.querySelector('.resize-handle');
+            if (resizeHandle) {
+                resizeHandle.addEventListener('mousedown', function(e) {
+                    e.stopPropagation();
+                    isResizing = true;
+                    const startX = e.clientX;
+                    const startY = e.clientY;
+                    const startWidth = parseInt(getComputedStyle(element).width);
+                    const startHeight = parseInt(getComputedStyle(element).height);
+                    
+                    function resizeElement(e) {
+                        if (!isResizing) return;
+                        const newWidth = Math.max(1, startWidth + (e.clientX - startX)); // Убрали верхний лимит
+                        const newHeight = Math.max(1, startHeight + (e.clientY - startY)); // Убрали верхний лимит
+                        
+                        element.style.width = newWidth + 'px';
+                        element.style.height = newHeight + 'px';
+                        
+                        // Update font size for emoji/text elements
+                        if (element.textContent && !element.style.backgroundImage) {
+                            element.style.fontSize = newWidth + 'px';
+                        }
+                        
+                        // Update slider if element is selected
+                        if (element === selectedElement) {
+                            document.getElementById('sizeSlider').value = Math.min(500, newWidth); // Ограничение только для слайдера
+                        }
+                    }
+                    
+                    function stopResizing() {
+                        isResizing = false;
+                        document.removeEventListener('mousemove', resizeElement);
+                        document.removeEventListener('mouseup', stopResizing);
+                    }
+                    
+                    document.addEventListener('mousemove', resizeElement);
+                    document.addEventListener('mouseup', stopResizing);
+                });
+            }
+        }
+        
+        function selectElement(element) {
+            // Remove selection from all elements
+            document.querySelectorAll('.draggable').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Select current element
+            element.classList.add('selected');
+            selectedElement = element;
+            
+            // Show control panel
+            const controlPanel = document.getElementById('controlPanel');
+            controlPanel.classList.add('active');
+            
+            // Update sliders with current values
+            updateSlidersFromElement(element);
+        }
+        
+        function updateSlidersFromElement(element) {
+            // Get current width (from style or computed)
+            let currentWidth = parseInt(element.style.width) || parseInt(getComputedStyle(element).width) || 60;
+            
+            // Get current rotation from transform
+            let currentRotation = 0;
+            const transform = element.style.transform || '';
+            const rotateMatch = transform.match(/rotate\(([^)]+)deg\)/);
+            if (rotateMatch) {
+                currentRotation = parseFloat(rotateMatch[1]);
+                // Normalize to 0-360 range
+                currentRotation = ((currentRotation % 360) + 360) % 360;
+            }
+            
+            // Get current opacity
+            let currentOpacity = parseFloat(element.style.opacity);
+            if (isNaN(currentOpacity)) {
+                currentOpacity = parseFloat(getComputedStyle(element).opacity) || 1;
+            }
+            currentOpacity = Math.round(currentOpacity * 100);
+            
+            // Get current z-index
+            let currentZIndex = parseInt(element.style.zIndex);
+            if (isNaN(currentZIndex)) {
+                currentZIndex = parseInt(getComputedStyle(element).zIndex) || 10;
+            }
+            
+            // Update sliders
+            document.getElementById('sizeSlider').value = Math.max(1, Math.min(500, currentWidth));
+            document.getElementById('rotationSlider').value = currentRotation;
+            document.getElementById('opacitySlider').value = Math.max(0, Math.min(100, currentOpacity));
+            document.getElementById('zIndexSlider').value = Math.max(1, Math.min(100, currentZIndex));
+        }
+        
+        // Click outside to deselect
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.draggable') && !e.target.closest('.control-panel')) {
+                document.querySelectorAll('.draggable').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                selectedElement = null;
+                document.getElementById('controlPanel').classList.remove('active');
+            }
+        });
+        
+        function updateSelectedSize(value) {
+            if (!selectedElement) return;
+            
+            const size = Math.max(1, parseInt(value)); // Убрали верхний лимит
+            selectedElement.style.width = size + 'px';
+            selectedElement.style.height = size + 'px';
+            
+            // Update font size for emoji/text elements
+            if (selectedElement.textContent && !selectedElement.style.backgroundImage) {
+                selectedElement.style.fontSize = size + 'px';
+            }
+        }
+        
+        function updateSelectedRotation(value) {
+            if (!selectedElement) return;
+            
+            const rotation = parseFloat(value) || 0;
+            const currentTransform = selectedElement.style.transform || '';
+            
+            // Remove existing rotation and add new one
+            const withoutRotate = currentTransform.replace(/rotate\([^)]*\)/g, '').trim();
+            const newTransform = withoutRotate ? 
+                `${withoutRotate} rotate(${rotation}deg)` : 
+                `rotate(${rotation}deg)`;
+            
+            selectedElement.style.transform = newTransform;
+        }
+        
+        function updateSelectedOpacity(value) {
+            if (!selectedElement) return;
+            
+            const opacity = Math.max(0, Math.min(100, parseFloat(value))) / 100;
+            selectedElement.style.opacity = opacity;
+        }
+        
+        function updateSelectedZIndex(value) {
+            if (!selectedElement) return;
+            
+            const zIndex = Math.max(1, Math.min(100, parseInt(value)));
+            selectedElement.style.zIndex = zIndex;
+        }
+        
+        function deleteSelected() {
+            if (selectedElement) {
+                selectedElement.remove();
+                selectedElement = null;
+                document.getElementById('controlPanel').classList.remove('active');
+            }
+        }
+        
+        function downloadAvatar() {
+            // Hide selection borders and handles temporarily
+            document.querySelectorAll('.draggable').forEach(el => {
+                el.classList.remove('selected');
+            });
+            document.getElementById('controlPanel').classList.remove('active');
+            
+            // Hide canvas tooltip
+            const canvasTooltip = document.querySelector('.canvas-tooltip');
+            if (canvasTooltip) {
+                canvasTooltip.style.display = 'none';
+            }
+            
+            const canvas = document.getElementById('avatarCanvas');
+            
+            // Use html2canvas library
+            if (typeof html2canvas !== 'undefined') {
+                html2canvas(canvas, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    foreignObjectRendering: true
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'avatar.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            } else {
+                // Fallback method using dom-to-image
+                if (typeof domtoimage !== 'undefined') {
+                    domtoimage.toPng(canvas, {
+                        width: canvas.offsetWidth,
+                        height: canvas.offsetHeight,
+                        bgcolor: 'transparent'
+                    }).then(function (dataUrl) {
+                        const link = document.createElement('a');
+                        link.download = 'avatar.png';
+                        link.href = dataUrl;
+                        link.click();
+                    }).catch(function (error) {
+                        console.error('Error generating image:', error);
+                        fallbackDownload();
+                    });
+                } else {
+                    // Manual canvas drawing as final fallback
+                    manualCanvasDownload();
+                }
+            }
+            
+            // Restore tooltip after a delay
+            setTimeout(() => {
+                if (canvasTooltip) {
+                    canvasTooltip.style.display = 'block';
+                }
+            }, 1000);
+        }
+        
+        function manualCanvasDownload() {
+            const canvas = document.getElementById('avatarCanvas');
+            const exportCanvas = document.createElement('canvas');
+            const ctx = exportCanvas.getContext('2d');
+            
+            // Set canvas size to match avatar canvas
+            exportCanvas.width = 450;
+            exportCanvas.height = 450;
+            
+            // Fill with canvas background
+            const gradient = ctx.createLinearGradient(0, 0, 450, 450);
+            gradient.addColorStop(0, '#1e1e2e');
+            gradient.addColorStop(1, '#2a2a3e');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 450, 450);
+            
+            // Get all draggable elements
+            const elements = canvas.querySelectorAll('.draggable');
+            let loadedImages = 0;
+            const totalImages = Array.from(elements).filter(el => el.style.backgroundImage).length;
+            
+            function drawElement(element) {
+                const rect = element.getBoundingClientRect();
+                const canvasRect = canvas.getBoundingClientRect();
+                
+                // Calculate position relative to canvas
+                const x = rect.left - canvasRect.left;
+                const y = rect.top - canvasRect.top;
+                const width = rect.width;
+                const height = rect.height;
+                
+                // Get transform values
+                const transform = element.style.transform || '';
+                const rotateMatch = transform.match(/rotate\(([^)]+)deg\)/);
+                const rotation = rotateMatch ? parseFloat(rotateMatch[1]) * Math.PI / 180 : 0;
+                
+                // Get opacity
+                const opacity = parseFloat(element.style.opacity) || 1;
+                
+                ctx.save();
+                ctx.globalAlpha = opacity;
+                
+                // Move to center of element for rotation
+                ctx.translate(x + width/2, y + height/2);
+                ctx.rotate(rotation);
+                
+                // Check if element has background image
+                if (element.style.backgroundImage && element.style.backgroundImage !== 'none') {
+                    const imageUrl = element.style.backgroundImage.match(/url\(["']?([^"']*)["']?\)/);
+                    if (imageUrl && imageUrl[1]) {
+                        const img = new Image();
+                        img.crossOrigin = 'anonymous';
+                        img.onload = function() {
+                            ctx.drawImage(img, -width/2, -height/2, width, height);
+                            loadedImages++;
+                            if (loadedImages === totalImages) {
+                                finishDownload();
+                            }
+                        };
+                        img.onerror = function() {
+                            loadedImages++;
+                            if (loadedImages === totalImages) {
+                                finishDownload();
+                            }
+                        };
+                        img.src = imageUrl[1];
+                    }
+                } 
+                // Check if element has text content (emoji)
+                else if (element.textContent && element.textContent.trim()) {
+                    const fontSize = parseInt(element.style.fontSize) || parseInt(getComputedStyle(element).fontSize) || 60;
+                    ctx.font = `${fontSize}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillText(element.textContent.trim(), 0, 0);
+                }
+                
+                ctx.restore();
+            }
+            
+            function finishDownload() {
+                const link = document.createElement('a');
+                link.download = 'avatar.png';
+                link.href = exportCanvas.toDataURL('image/png');
+                link.click();
+            }
+            
+            // Draw all elements
+            elements.forEach(drawElement);
+            
+            // If no images to load, finish immediately
+            if (totalImages === 0) {
+                elements.forEach(element => {
+                    if (element.textContent && element.textContent.trim()) {
+                        drawElement(element);
+                    }
+                });
+                finishDownload();
+            }
+        }
+        
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Make functions globally accessible first
+        window.uploadImage = uploadImage;
+        window.handleFileUpload = handleFileUpload;
+        window.addIcon = addIcon;
+        window.showCategory = showCategory;
+        window.uploadPersonalItem = uploadPersonalItem;
+        window.handlePersonalUpload = handlePersonalUpload;
+        window.deletePersonalItem = deletePersonalItem;
+        window.updateSelectedSize = updateSelectedSize;
+        window.updateSelectedRotation = updateSelectedRotation;
+        window.updateSelectedOpacity = updateSelectedOpacity;
+        window.updateSelectedZIndex = updateSelectedZIndex;
+        window.deleteSelected = deleteSelected;
+        window.downloadAvatar = downloadAvatar;
+        window.toggleHelp = toggleHelp;
+        window.closeHelp = closeHelp;
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCategories();
+            createParticles();
+        });
+        
+        // Call immediately as backup
+        setTimeout(() => {
+            initializeCategories();
+            createParticles();
+        }, 100);
+        
+        // Help modal functions
+        function toggleHelp() {
+            const modal = document.getElementById('helpModal');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+        
+        function closeHelp(event) {
+            const modal = document.getElementById('helpModal');
+            if (!event || event.target === modal || event.target.classList.contains('close-help')) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Hide canvas tooltip after 8 seconds
+        setTimeout(() => {
+            const canvasTooltip = document.querySelector('.canvas-tooltip');
+            if (canvasTooltip) {
+                canvasTooltip.style.transition = 'opacity 1s ease';
+                canvasTooltip.style.opacity = '0';
+                setTimeout(() => {
+                    canvasTooltip.style.display = 'none';
+                }, 1000);
+            }
+        }, 8000);
+    </script>
+</body>
+</html>
