@@ -8,22 +8,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;500;700;900&family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
         
         :root {
-            --primary: #00f7ff;
-            --primary-dark: #00ccd4;
-            --secondary: #ff00ff;
-            --accent: #ff4d9e;
-            --dark: #0a0a1a;
-            --darker: #050510;
-            --light: #e0e0ff;
+            --primary: #00FFE0; /* accent blue */
+            --primary-dark: #00AFFF; /* accent blue2 */
+            --secondary: #FFD600; /* accent yellow */
+            --accent: #FF4C29; /* accent red */
+            --dark: #232427; /* background */
+            --darker: #18191B; /* slightly darker bg */
+            --light: #111111; /* main text */
+            --heading: #A9B3C1;
+            --highlight: #00AFFF;
+            --highlight2: #00FFE0;
+            --highlight-yellow: #FFD600;
+            --highlight-red: #FF4C29;
         }
         
         body {
-            background: radial-gradient(circle at center, var(--darker) 0%, var(--dark) 100%);
-            color: var(--light);
+            background: url('FON.png') center top/cover repeat-y, var(--dark);
+            color: #111;
             font-family: 'Poppins', sans-serif;
             overflow-x: hidden;
             min-height: 100vh;
@@ -235,15 +241,15 @@
         
         .avatar-canvas {
             background: rgba(20, 20, 40, 0.4);
-            border: 2px solid rgba(0, 247, 255, 0.3);
+            border: 1.5px solid rgba(0, 175, 255, 0.15);
             border-radius: 24px;
             position: relative;
             overflow: hidden;
             width: 500px;
             height: 500px;
             box-shadow: 
-                0 0 30px rgba(0, 247, 255, 0.15),
-                inset 0 0 30px rgba(0, 247, 255, 0.1);
+                0 0 20px rgba(0, 175, 255, 0.10),
+                inset 0 0 20px rgba(0, 175, 255, 0.07);
             backdrop-filter: blur(15px);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             margin: 0 auto;
@@ -262,6 +268,11 @@
             border-radius: 26px;
             opacity: 0.7;
             animation: gradientBorder 8s ease infinite;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .avatar-canvas.has-avatar::before {
+            opacity: 0 !important;
         }
         
         .avatar-canvas:hover {
@@ -392,13 +403,13 @@
             border: none;
             padding: 0.9rem 2rem;
             border-radius: 50px;
-            color: #0a0a1a;
+            color: #111;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.95rem;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             margin: 0.5rem;
-            box-shadow: 0 5px 15px rgba(0, 247, 255, 0.3);
+            box-shadow: 0 5px 15px var(--primary-dark);
             position: relative;
             overflow: hidden;
             letter-spacing: 0.5px;
@@ -458,9 +469,9 @@
         }
         
         .btn-download {
-            background: linear-gradient(135deg, var(--accent), #ff1a75);
-            color: white;
-            box-shadow: 0 8px 20px rgba(255, 77, 158, 0.3);
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            color: var(--light);
+            box-shadow: 0 8px 20px var(--accent);
         }
         
         .btn-download:hover {
@@ -473,18 +484,16 @@
         }
         
         .title {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Oswald', 'Arial Black', Impact, sans-serif;
             font-size: 3.5rem;
-            font-weight: 900;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent), var(--primary));
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            font-style: italic;
+            color: #fff;
+            background: none;
             text-align: center;
             margin: 1.5rem 0 3rem;
             letter-spacing: 4px;
-            animation: gradientText 8s ease infinite;
-            text-shadow: 0 0 20px rgba(0, 247, 255, 0.3);
+            text-shadow: none;
             text-transform: uppercase;
             position: relative;
             display: inline-block;
@@ -499,15 +508,15 @@
         
         .instruction {
             font-family: 'Poppins', sans-serif;
-            color: rgba(0, 230, 204, 0.8);
+            color: var(--highlight);
             text-align: center;
             margin: 25px 0;
             font-size: 16px;
             font-weight: 400;
-            background: rgba(0, 230, 204, 0.05);
+            background: rgba(0, 175, 255, 0.05);
             padding: 18px 30px;
             border-radius: 25px;
-            border: 1px solid rgba(0, 230, 204, 0.2);
+            border: 1px solid var(--highlight);
             backdrop-filter: blur(10px);
             max-width: 600px;
             margin-left: auto;
@@ -555,7 +564,7 @@
             font-family: 'Inter', sans-serif;
             background: rgba(51, 51, 68, 0.8);
             border: 2px solid rgba(85, 85, 102, 0.5);
-            color: #aaa;
+            color: #111;
             padding: 14px 22px;
             border-radius: 25px;
             cursor: pointer;
@@ -582,10 +591,10 @@
         }
         
         .category-tab.active {
-            color: #1a1a1a;
-            border-color: #00e6cc;
+            color: #111;
+            border-color: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 230, 204, 0.3);
+            box-shadow: 0 8px 20px var(--primary-dark);
         }
         
         .category-tab.active::before {
@@ -593,10 +602,10 @@
         }
         
         .category-tab:hover {
-            border-color: #00e6cc;
-            color: #00e6cc;
+            border-color: var(--primary-dark);
+            color: #111;
             transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(0, 230, 204, 0.2);
+            box-shadow: 0 5px 15px var(--primary-dark);
         }
         
         .content-panel {
@@ -776,14 +785,35 @@
         
         .rotate-handle {
             position: absolute;
-            top: -15px;
-            right: -15px;
-            width: 20px;
-            height: 20px;
-            background: #00e6cc;
+            top: -22px;
+            right: -22px;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #00FFE0 60%, #00AFFF 100%);
             border-radius: 50%;
+            border: 2.5px solid #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
             cursor: grab;
             display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .rotate-handle::after {
+            content: '\21bb';
+            color: #232427;
+            font-size: 1.3em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        .rotate-handle:hover {
+            box-shadow: 0 4px 16px rgba(0,175,255,0.25);
+            transform: scale(1.08) rotate(-10deg);
         }
         
         .draggable.selected .rotate-handle {
@@ -792,14 +822,35 @@
         
         .resize-handle {
             position: absolute;
-            bottom: -10px;
-            right: -10px;
-            width: 20px;
-            height: 20px;
-            background: #ff6b47;
+            bottom: -18px;
+            right: -18px;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #FFD600 60%, #FF4C29 100%);
             border-radius: 50%;
-            cursor: nw-resize;
+            border: 2.5px solid #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            cursor: nwse-resize;
             display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .resize-handle::after {
+            content: '\2194';
+            color: #232427;
+            font-size: 1.1em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        .resize-handle:hover {
+            box-shadow: 0 4px 16px rgba(255,214,0,0.18);
+            transform: scale(1.08) rotate(8deg);
         }
         
         .draggable.selected .resize-handle {
@@ -809,7 +860,7 @@
         /* Social buttons */
         .social-buttons {
             position: fixed;
-            right: 30px;
+            right: 0;
             top: 50%;
             transform: translateY(-50%);
             display: flex;
@@ -957,7 +1008,7 @@
             border: 1px solid rgba(0, 230, 204, 0.3);
             border-radius: 10px;
             padding: 8px 12px;
-            color: rgba(0, 230, 204, 0.8);
+            color: #111;
             font-size: 12px;
             backdrop-filter: blur(10px);
             animation: fadeInOut 4s ease-in-out infinite;
@@ -999,7 +1050,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 175, 255, 0.10);
             display: none;
             align-items: center;
             justify-content: center;
@@ -1008,33 +1059,72 @@
         }
         
         .help-content {
-            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
-            border: 2px solid #00e6cc;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 600px;
+            background: #fff;
+            border: 2.5px solid #00AFFF;
+            border-radius: 24px;
+            padding: 38px 48px 38px 48px;
+            max-width: 520px;
             max-height: 80vh;
             overflow-y: auto;
-            color: #ffffff;
+            color: #111;
             position: relative;
+            box-shadow: 0 8px 32px rgba(0,175,255,0.10);
+            font-family: 'Poppins', sans-serif;
+            scrollbar-width: thin;
+            scrollbar-color: #00AFFF #fff;
+        }
+        .help-content::-webkit-scrollbar {
+            width: 10px;
+            background: #fff;
+            border-radius: 8px;
+        }
+        .help-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00AFFF 60%, #00FFE0 100%);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,175,255,0.10);
+            min-height: 40px;
+        }
+        .help-content::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #00FFE0 60%, #00AFFF 100%);
         }
         
         .help-content h2 {
-            color: #00e6cc;
-            font-family: 'Orbitron', monospace;
-            font-size: 24px;
-            margin-bottom: 20px;
+            color: #00AFFF;
+            font-family: 'Oswald', 'Arial Black', Impact, sans-serif;
+            font-size: 2.1em;
+            margin-bottom: 28px;
             text-align: center;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
         }
         
         .help-section {
-            margin-bottom: 20px;
+            margin-bottom: 28px;
+            padding-bottom: 8px;
+            border-bottom: 1.5px solid #e6faff;
+        }
+        
+        .help-section:last-child {
+            border-bottom: none;
         }
         
         .help-section h3 {
-            color: #64ffda;
-            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #00AFFF;
+            font-size: 1.15em;
+            font-weight: 700;
             margin-bottom: 10px;
+            font-family: 'Oswald', 'Arial Black', Impact, sans-serif;
+            letter-spacing: 0.5px;
+        }
+        
+        .help-section h3 .help-icon {
+            font-size: 1.2em;
+            display: inline-block;
+            margin-right: 2px;
         }
         
         .help-section ul {
@@ -1044,15 +1134,18 @@
         
         .help-section li {
             margin-bottom: 8px;
-            padding-left: 20px;
+            padding-left: 0;
             position: relative;
+            font-size: 1em;
+            color: #232427;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .help-section li::before {
-            content: "→";
-            color: #00e6cc;
-            position: absolute;
-            left: 0;
+            content: '';
+            display: none;
         }
         
         .close-help {
@@ -1061,7 +1154,7 @@
             right: 20px;
             background: none;
             border: none;
-            color: #00e6cc;
+            color: #00AFFF;
             font-size: 24px;
             cursor: pointer;
             width: 30px;
@@ -1074,8 +1167,137 @@
         }
         
         .close-help:hover {
-            background: rgba(0, 230, 204, 0.1);
+            background: #e6faff;
             transform: rotate(90deg);
+        }
+        
+        .profile-btn {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            border: 2.5px solid #fff;
+            background: linear-gradient(135deg, #00FFE0 60%, #00AFFF 100%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: box-shadow 0.2s, transform 0.2s;
+            padding: 0;
+            outline: none;
+        }
+        .profile-btn:hover {
+            box-shadow: 0 4px 16px rgba(0,175,255,0.25);
+            transform: scale(1.08);
+        }
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .profile-popup {
+            position: fixed;
+            bottom: 100px;
+            right: 40px;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            padding: 28px 44px 28px 28px;
+            z-index: 1300;
+            min-width: 300px;
+            min-height: 110px;
+            display: flex;
+            align-items: center;
+            animation: fadeInProfile 0.3s;
+        }
+        @keyframes fadeInProfile {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .profile-popup-inner {
+            display: flex;
+            align-items: center;
+        }
+        .profile-popup-avatar {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 16px;
+            border: 1.5px solid #fff;
+        }
+        .profile-popup-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .profile-popup-name {
+            font-family: 'Oswald', 'Arial Black', Impact, sans-serif;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #232427;
+        }
+        .profile-popup-role {
+            font-size: 1em;
+            color: #00AFFF;
+            font-weight: 500;
+        }
+        .profile-x-link {
+            margin-top: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            border-radius: 50%;
+            background: #fff;
+            border: 1.5px solid #00AFFF;
+            width: 32px;
+            height: 32px;
+            transition: box-shadow 0.2s, border 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+            text-decoration: none;
+        }
+        .profile-x-link:hover {
+            border: 1.5px solid #111;
+            box-shadow: 0 4px 16px rgba(0,175,255,0.18);
+            background: #e6faff;
+        }
+        .profile-x-link svg {
+            margin: auto;
+            display: block;
+        }
+        
+        .social-label-container {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            pointer-events: none;
+        }
+        .social-label {
+            background: rgba(255,255,255,0.10);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.05em;
+            font-weight: 500;
+            border-radius: 16px;
+            padding: 12px 18px 12px 22px;
+            margin-right: 65px;
+            box-shadow: 0 2px 8px rgba(0,175,255,0.10);
+            display: flex;
+            align-items: center;
+            pointer-events: auto;
+        }
+        .social-arrow-img {
+            width: 28px;
+            height: 28px;
+            margin-left: 10px;
+            display: inline-block;
+            transform: rotate(-90deg) translateY(2px);
+            filter: drop-shadow(0 1px 2px rgba(0,175,255,0.10));
         }
     </style>
 </head>
@@ -1086,40 +1308,33 @@
         <div class="mascot-glow"></div>
     </div>
     
-    <!-- 3D IRYS Cube Background -->
-    <div class="cube-container">
-        <div class="cube">
-            <div class="face front">I</div>
-            <div class="face back">R</div>
-            <div class="face right">Y</div>
-            <div class="face left">S</div>
-            <div class="face top"></div>
-            <div class="face bottom"></div>
-        </div>
-    </div>
-    
     <!-- Animated background particles -->
     <div class="particles" id="particles"></div>
     
     <!-- Social Media Buttons -->
-    <div class="social-buttons">
-        <a href="https://x.com/irys_xyz" target="_blank" rel="noopener noreferrer" class="social-btn twitter" title="Follow us on X (Twitter)">
-            <svg viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-            </svg>
-        </a>
-        
-        <a href="https://irys.xyz/" target="_blank" rel="noopener noreferrer" class="social-btn website" title="Visit Irys Website">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-            </svg>
-        </a>
-        
-        <a href="https://discord.gg/irys" target="_blank" rel="noopener noreferrer" class="social-btn discord" title="Join our Discord">
-            <svg viewBox="0 0 24 24">
-                <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0189 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1568 2.4189Z"/>
-            </svg>
-        </a>
+    <div class="social-label-container">
+        <div class="social-label">
+            Official IRYS social networks <img src="free-icon-down-arrow-6364314.png" class="social-arrow-img" alt="arrow">
+        </div>
+        <div class="social-buttons">
+            <a href="https://x.com/irys_xyz" target="_blank" rel="noopener noreferrer" class="social-btn twitter" title="Follow us on X (Twitter)">
+                <svg viewBox="0 0 24 24">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+            </a>
+            
+            <a href="https://irys.xyz/" target="_blank" rel="noopener noreferrer" class="social-btn website" title="Visit Irys Website">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                </svg>
+            </a>
+            
+            <a href="https://discord.gg/irys" target="_blank" rel="noopener noreferrer" class="social-btn discord" title="Join our Discord">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0189 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1568 2.4189Z"/>
+                </svg>
+            </a>
+        </div>
     </div>
     
     <div class="container mx-auto p-6">
@@ -1141,7 +1356,13 @@
         <!-- Category Tabs -->
         <div class="flex justify-center gap-2 mb-6">
             <div class="tooltip">
-                <button class="category-tab active" onclick="showCategory('emojis')" data-category="emojis">
+                <button class="category-tab active" onclick="showCategory('mainaccessories')" data-category="mainaccessories">
+                    🏅 Irys brend
+                </button>
+                <span class="tooltiptext">Special main accessories for your avatar</span>
+            </div>
+            <div class="tooltip">
+                <button class="category-tab" onclick="showCategory('emojis')" data-category="emojis">
                     😀 Emojis
                 </button>
                 <span class="tooltiptext">Browse and add emoji faces, hearts, and symbols</span>
@@ -1161,7 +1382,7 @@
         </div>
         
         <!-- Content Panels -->
-        <div id="emojiPanel" class="content-panel active">
+        <div id="emojiPanel" class="content-panel">
             <div class="emoji-container">
                 <div class="grid grid-cols-8 gap-2 max-w-2xl mx-auto mb-4">
                     <!-- Emojis will be populated by JavaScript -->
@@ -1173,6 +1394,14 @@
             <div class="emoji-container">
                 <div class="grid grid-cols-6 gap-2 max-w-xl mx-auto mb-4">
                     <!-- Accessories will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div id="mainAccessoriesPanel" class="content-panel active">
+            <div class="emoji-container">
+                <div class="grid grid-cols-5 gap-2 max-w-xl mx-auto mb-4" id="mainAccessoriesGrid">
+                    <!-- Main accessories will be populated by JavaScript -->
                 </div>
             </div>
         </div>
@@ -1222,47 +1451,47 @@
             <h2>How to Use Avatar Editor</h2>
             
             <div class="help-section">
-                <h3>🎨 Getting Started</h3>
+                <h3><span class="help-icon">🎨</span> Getting Started</h3>
                 <ul>
-                    <li>Upload a base avatar image or start with a blank canvas</li>
-                    <li>Browse emojis, accessories, or upload custom items</li>
-                    <li>Click any element to add it to your canvas</li>
+                    <li><b>Upload</b> a base avatar image or start with a blank canvas</li>
+                    <li><b>Browse</b> emojis, accessories, or upload custom items</li>
+                    <li><b>Click</b> any element to add it to your canvas</li>
                 </ul>
             </div>
             
             <div class="help-section">
-                <h3>✏️ Editing Elements</h3>
+                <h3><span class="help-icon">✏️</span> Editing Elements</h3>
                 <ul>
-                    <li>Click on canvas elements to select them</li>
-                    <li>Drag elements to move them around</li>
-                    <li>Use orange handle to resize elements</li>
-                    <li>Use cyan handle to rotate elements</li>
+                    <li><b>Click</b> on canvas elements to select them</li>
+                    <li><b>Drag</b> elements to move them around</li>
+                    <li><b>Use</b> <span style="color:#FFD600;font-weight:600;">yellow</span> handle to resize</li>
+                    <li><b>Use</b> <span style="color:#00FFE0;font-weight:600;">cyan</span> handle to rotate</li>
                 </ul>
             </div>
             
             <div class="help-section">
-                <h3>⚙️ Control Panel</h3>
+                <h3><span class="help-icon">⚙️</span> Control Panel</h3>
                 <ul>
-                    <li>Select an element to open the control panel</li>
-                    <li>Adjust size, rotation, opacity, and layer order</li>
-                    <li>Use the delete button to remove elements</li>
+                    <li><b>Select</b> an element to open the control panel</li>
+                    <li><b>Adjust</b> size, rotation, opacity, and layer order</li>
+                    <li><b>Delete</b> elements with the delete button</li>
                 </ul>
             </div>
             
             <div class="help-section">
-                <h3>💾 Saving Your Work</h3>
+                <h3><span class="help-icon">💾</span> Saving Your Work</h3>
                 <ul>
-                    <li>Click "Download" to save your avatar as PNG</li>
+                    <li><b>Download</b> your avatar as PNG</li>
                     <li>Your custom uploaded items are saved for reuse</li>
                 </ul>
             </div>
             
             <div class="help-section">
-                <h3>🔗 Social Links</h3>
+                <h3><span class="help-icon">🔗</span> Social Links</h3>
                 <ul>
-                    <li>Follow us on X (Twitter) for updates</li>
-                    <li>Visit our website for more tools</li>
-                    <li>Join our Discord community</li>
+                    <li><b>Follow</b> us on X (Twitter) for updates</li>
+                    <li><b>Visit</b> our website for more tools</li>
+                    <li><b>Join</b> our Discord community</li>
                 </ul>
             </div>
         </div>
@@ -1307,6 +1536,44 @@
         <div class="tooltip">
             <button class="btn" onclick="deleteSelected()" style="width: 100%; background: #f44336;">Delete Element</button>
             <span class="tooltiptext">Remove the selected element from canvas</span>
+        </div>
+    </div>
+
+    <!-- Profile Buttons -->
+    <div id="profileButtons" style="position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 18px; z-index: 1200;">
+        <button class="profile-btn" onclick="toggleProfilePopup('designer')" title="Designer">
+            <img src="designer.png" alt="Designer" class="profile-avatar">
+        </button>
+        <button class="profile-btn" onclick="toggleProfilePopup('coder')" title="Coder">
+            <img src="coder.png" alt="Coder" class="profile-avatar">
+        </button>
+    </div>
+    <div id="designerProfile" class="profile-popup" style="display:none;">
+        <div class="profile-popup-inner">
+            <img src="designer.png" alt="Designer" class="profile-popup-avatar">
+            <div class="profile-popup-info">
+                <div class="profile-popup-name">AnnaBEL</div>
+                <div class="profile-popup-role">UI/UX Designer</div>
+                <a href="https://x.com/annabel" target="_blank" class="profile-x-link" title="AnnaBEL on X">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="#111"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id="coderProfile" class="profile-popup" style="display:none;">
+        <div class="profile-popup-inner">
+            <img src="coder.png" alt="Coder" class="profile-popup-avatar">
+            <div class="profile-popup-info">
+                <div class="profile-popup-name">Megymin</div>
+                <div class="profile-popup-role">Frontend Developer</div>
+                <a href="https://x.com/megymin" target="_blank" class="profile-x-link" title="Megymin on X">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" fill="#111"/>
+                    </svg>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -1358,9 +1625,32 @@
             '🔗', '💼', '🎒', '👛', '👜', '👝', '🛍️', '🎁', '🎊', '🎉', '🏆', '🥇', '🏅', '🎖️'
         ];
         
+        const mainAccessories = [
+            'aks/34.png',
+            'aks/35.png',
+            'aks/36.png',
+            'aks/37.png',
+            'aks/38.png',
+            'aks/39.png',
+            'aks/40.png',
+            'aks/41.png',
+            'aks/42.png',
+            'aks/43.png',
+            'aks/44.png',
+            'aks/45.png',
+            'aks/46.png',
+            'aks/47.png',
+            'aks/48.png',
+            'aks/49.png',
+            'aks/50.png',
+            'aks/51.png',
+            'aks/52.png',
+        ];
+        
         function initializeCategories() {
             populateEmojis();
             populateAccessories();
+            populateMainAccessories();
         }
         
         function populateEmojis() {
@@ -1389,6 +1679,21 @@
             });
         }
         
+        function populateMainAccessories() {
+            const grid = document.getElementById('mainAccessoriesGrid');
+            grid.innerHTML = '';
+            mainAccessories.forEach(src => {
+                const item = document.createElement('div');
+                item.className = 'personal-item';
+                item.style.width = '90px';
+                item.style.height = '90px';
+                item.style.cursor = 'pointer';
+                item.innerHTML = `<img src="${src}" alt="Main Accessory">`;
+                item.onclick = () => addMainAccessoryToCanvas(src);
+                grid.appendChild(item);
+            });
+        }
+        
         function showCategory(category) {
             // Update tabs
             document.querySelectorAll('.category-tab').forEach(tab => {
@@ -1405,6 +1710,8 @@
                 document.getElementById('emojiPanel').classList.add('active');
             } else if (category === 'accessories') {
                 document.getElementById('accessoryPanel').classList.add('active');
+            } else if (category === 'mainaccessories') {
+                document.getElementById('mainAccessoriesPanel').classList.add('active');
             } else if (category === 'personal') {
                 document.getElementById('personalPanel').classList.add('active');
             }
@@ -1495,43 +1802,20 @@
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
             const reader = new FileReader();
             reader.onload = function(e) {
-                addImageToCanvas(e.target.result);
+                setAvatarBackground(e.target.result);
             };
             reader.readAsDataURL(file);
         }
         
-        function addImageToCanvas(imageSrc) {
+        function setAvatarBackground(imageSrc) {
             const canvas = document.getElementById('avatarCanvas');
-            const element = document.createElement('div');
-            element.className = 'draggable';
-            element.style.position = 'absolute';
-            element.style.left = '50px';
-            element.style.top = '50px';
-            element.style.width = '100px';
-            element.style.height = '100px';
-            element.style.backgroundImage = `url(${imageSrc})`;
-            element.style.backgroundSize = 'contain';
-            element.style.backgroundRepeat = 'no-repeat';
-            element.style.backgroundPosition = 'center';
-            element.style.opacity = '1';
-            element.style.zIndex = '10';
-            element.style.transform = 'rotate(0deg)';
-            element.id = 'element-' + (++elementCounter);
-            
-            // Add control handles
-            const rotateHandle = document.createElement('div');
-            rotateHandle.className = 'rotate-handle';
-            element.appendChild(rotateHandle);
-            
-            const resizeHandle = document.createElement('div');
-            resizeHandle.className = 'resize-handle';
-            element.appendChild(resizeHandle);
-            
-            setupElementInteractions(element);
-            canvas.appendChild(element);
+            canvas.style.backgroundImage = `url('${imageSrc}')`;
+            canvas.style.backgroundSize = 'cover';
+            canvas.style.backgroundPosition = 'center';
+            canvas.style.backgroundRepeat = 'no-repeat';
+            canvas.classList.add('has-avatar');
         }
         
         function addIcon(icon) {
@@ -2033,6 +2317,52 @@
                 }, 1000);
             }
         }, 8000);
+        
+        function addMainAccessoryToCanvas(imageSrc) {
+            const canvas = document.getElementById('avatarCanvas');
+            const element = document.createElement('div');
+            element.className = 'draggable';
+            element.style.position = 'absolute';
+            element.style.left = '50px';
+            element.style.top = '50px';
+            element.style.width = '120px';
+            element.style.height = '120px';
+            element.style.backgroundImage = `url(${imageSrc})`;
+            element.style.backgroundSize = 'contain';
+            element.style.backgroundRepeat = 'no-repeat';
+            element.style.backgroundPosition = 'center';
+            element.style.opacity = '1';
+            element.style.zIndex = '10';
+            element.style.transform = 'rotate(0deg)';
+            element.id = 'element-' + (++elementCounter);
+            // Add control handles
+            const rotateHandle = document.createElement('div');
+            rotateHandle.className = 'rotate-handle';
+            element.appendChild(rotateHandle);
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle';
+            element.appendChild(resizeHandle);
+            setupElementInteractions(element);
+            canvas.appendChild(element);
+        }
+        
+        function toggleProfilePopup(type) {
+            const designer = document.getElementById('designerProfile');
+            const coder = document.getElementById('coderProfile');
+            if (type === 'designer') {
+                designer.style.display = designer.style.display === 'flex' ? 'none' : 'flex';
+                coder.style.display = 'none';
+            } else {
+                coder.style.display = coder.style.display === 'flex' ? 'none' : 'flex';
+                designer.style.display = 'none';
+            }
+        }
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.profile-btn') && !e.target.closest('.profile-popup')) {
+                document.getElementById('designerProfile').style.display = 'none';
+                document.getElementById('coderProfile').style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>

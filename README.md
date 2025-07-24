@@ -44,6 +44,7 @@ IRYS Avatar Editor is a modern web application for creating and editing avatars 
 
 - **HTML, CSS (Tailwind, custom styles), JavaScript**.
 - No backend — everything works in the browser.
+- Uses [dom-to-image](https://github.com/tsayen/dom-to-image) (or html2canvas, if connected) for image export.
 - Custom images are stored in session memory (until page reload).
 - Supports modern browsers.
 
